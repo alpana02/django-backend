@@ -14,7 +14,6 @@ import random
 def uploadUrl(request): 
     # urlName = json.loads(request.body.decode('utf-8'))['urlName']
     url= json.loads(request.body.decode('utf-8'))['url']
-    print(url,"------------>")
     obj = Website(url = url)
     obj.save()
     res = generateSentences(url)
@@ -56,7 +55,10 @@ child_elements = ['h1','h2','h3','h4','h5','p']
 def generateSentences (url):
     text = []
     page = requests.get(url)
+    print("11111------------>")
     soup = BeautifulSoup(page.content, 'html.parser')
+    print("22222------------>")
+
     # for tag in child_elements:
     #     for element in soup.select(tag):
     #         text.append(re.sub('\s+', ' ', element.text.strip()))
@@ -73,11 +75,13 @@ def generateSentences (url):
     # return text
 
     current_sibling = soup.find('h2', text='Prepared Remarks:')
+    print("33333------------>")
     text = []
     while (current_sibling.next_sibling != soup.find('h2', text='Questions and Answers:')):
         if current_sibling.name == "p":
             text.append(current_sibling.next_sibling.text.strip())
         current_sibling = current_sibling.next_sibling
+    print("4444------------>")
 
     res = []
     for s in text:
