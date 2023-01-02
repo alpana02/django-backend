@@ -14,6 +14,7 @@ import random
 def uploadUrl(request): 
     # urlName = json.loads(request.body.decode('utf-8'))['urlName']
     url= json.loads(request.body.decode('utf-8'))['url']
+    print(url,"------------>")
     obj = Website(url = url)
     obj.save()
     res = generateSentences(url)
