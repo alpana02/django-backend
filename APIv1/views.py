@@ -14,20 +14,23 @@ import random
 def uploadUrl(request): 
     # urlName = json.loads(request.body.decode('utf-8'))['urlName']
     url= json.loads(request.body.decode('utf-8'))['url']
-    obj = Website(url = url)
-    obj.save()
-    res = generateSentences(url)
+    if(len(Website.objects.filter(url = url))==0):
+        obj = Website(url = url)
+        obj.save()
+        res = generateSentences(url)
 
-    for r in res : 
-        s = Sentences(sentenceText = r, website =  obj)
-        s.save()
+        for r in res : 
+            s = Sentences(sentenceText = r, website =  obj)
+            s.save()
 
-    sentences = list(Website.objects.get(id = obj.id).sentences_set.all())
-    sentences = random.sample(sentences, 7)
+        sentences = list(Website.objects.get(id = obj.id).sentences_set.all())
+        sentences = random.sample(sentences, 7)
 
-    for s in sentences:
-        s.selected = True
-        s.save()
+        for s in sentences:
+            s.selected = True
+            s.save()
+    else:
+        obj = Website.objects.get(url = url)
 
     return JsonResponse({'objectId' : obj.id})
 
