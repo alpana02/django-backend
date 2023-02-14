@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Website,Sentences
 import json
+from PyPDF2 import PdfReader, PdfFileWriter
 
 from bs4 import BeautifulSoup
 import requests
@@ -31,6 +32,35 @@ def uploadUrl(request):
             s.save()
     else:
         obj = Website.objects.get(url = url)
+
+    return JsonResponse({'objectId' : obj.id})
+
+@csrf_exempt
+def uploadPdf(request): 
+    # urlName = json.loads(request.body.decode('utf-8'))['urlName']
+    # url= json.loads(request.body.decode('utf-8'))['url']
+    # pdf= json.loads(request.body.decode('utf-8'))['file']
+    pdf = request.FILES['file']
+    obj = Website(pdf = pdf)
+    obj.save()
+    # print(request.FILES['file'] ,"________________________________________")
+    if(len(Website.objects.filter(pdf = pdf))==0):
+        # print(obj.pdf.url,"+++++++++++++++++++++++++")
+        res = generateSentencesPdf(obj.pdf.url)
+        # res = ["jdshjsdk","sdhfkjdsh"]
+        for r in res : 
+            s = Sentences(sentenceText = r, website =  obj)
+            s.save()
+
+        sentences = list(Website.objects.get(id = obj.id).sentences_set.all())
+        sentences = random.sample(sentences, 7)
+
+
+        for s in sentences:
+            s.selected = True
+            s.save()
+    else:
+        obj = Website.objects.get(pdf = pdf)
 
     return JsonResponse({'objectId' : obj.id})
 
@@ -93,6 +123,26 @@ def generateSentences (url):
     test_list = [i for i in res if i]
     return (test_list)
 
+def generateSentencesPdf (url):
+    # print(url,"-----------------------")
+    # url.replace("/","\\")
+    url = url.replace("/","\\")
+    print(url,"++++++++++++++++++++++++++")
+    x = "media\\uploadedPdf\\Undertakingbystudents_v50m5Fb.pdf"
+    pdf = PdfReader(url[1:])
+    text = []
+    for page_num in range(len(pdf.pages)):
+        pageObj = pdf.pages[page_num]
+        text.append(pageObj.extract_text())
+    res = []
+    for s in text:
+        if(s=='\n'):
+            continue
+        else:
+            res+=(s.split(". "))
+
+    test_list = [s.replace('\n', '') for s in res]
+    return (test_list)
 
 def updateSelectedSentence(request,sentenceId):
     sentence = Sentences.objects.get(id = sentenceId)

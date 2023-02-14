@@ -6,6 +6,7 @@ from django.db import models
 class Website(models.Model):
     # name = models.CharField(max_length=30)
     url = models.CharField(max_length=200)
+    pdf = models.FileField(upload_to="uploadedPdf/")
 
 
 class Sentences(models.Model):
