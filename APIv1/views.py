@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Website,Sentences
 import json
-from PyPDF4 import PdfReader, PdfFileWriter
+from PyPDF4 import PdfFileReader, PdfFileWriter
 
 from bs4 import BeautifulSoup
 import requests
