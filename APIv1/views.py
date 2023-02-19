@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Website,Sentences
-import json
+import json, os
 from PyPDF2 import PdfReader, PdfFileWriter
 
 from bs4 import BeautifulSoup
@@ -129,6 +129,7 @@ def generateSentencesPdf (url):
 #     url = url.replace("/","\\")
 #     print(url,"++++++++++++++++++++++++++")
 #     x = "media\\uploadedPdf\\Undertakingbystudents_v50m5Fb.pdf"
+    url = os.path.join(os.getcwd(),url)
     pdf = PdfReader(url)
 #     pdf = PdfReader(url[1:])
     text = []
