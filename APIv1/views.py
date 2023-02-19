@@ -126,10 +126,11 @@ def generateSentences (url):
 def generateSentencesPdf (url):
     # print(url,"-----------------------")
     # url.replace("/","\\")
-    url = url.replace("/","\\")
-    print(url,"++++++++++++++++++++++++++")
-    x = "media\\uploadedPdf\\Undertakingbystudents_v50m5Fb.pdf"
-    pdf = PdfReader(url[1:])
+#     url = url.replace("/","\\")
+#     print(url,"++++++++++++++++++++++++++")
+#     x = "media\\uploadedPdf\\Undertakingbystudents_v50m5Fb.pdf"
+    pdf = PdfReader(url)
+#     pdf = PdfReader(url[1:])
     text = []
     for page_num in range(len(pdf.pages)):
         pageObj = pdf.pages[page_num]
