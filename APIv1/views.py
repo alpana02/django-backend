@@ -130,6 +130,7 @@ def generateSentencesPdf (url):
 #     print(url,"++++++++++++++++++++++++++")
 #     x = "media\\uploadedPdf\\Undertakingbystudents_v50m5Fb.pdf"
     url = os.path.join(os.getcwd(),url[1:])
+    os.system('ls media/uploadedPdf')
     pdf = PdfReader(url[1:])
     text = []
     for page_num in range(len(pdf.pages)):
