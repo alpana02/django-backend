@@ -129,9 +129,9 @@ def generateSentencesPdf (url):
 #     url = url.replace("/","\\")
 #     print(url,"++++++++++++++++++++++++++")
 #     x = "media\\uploadedPdf\\Undertakingbystudents_v50m5Fb.pdf"
-    url = os.path.join(os.getcwd(),url[1:])
+    url = os.path.join(BASE_DIR,url)
     os.system('pwd')
-    os.system('ls ./APIv1/uploadedPdf')
+    os.system('ls ./django-backend/APIv1/uploadedPdf')
     pdf = PdfReader(url)
     text = []
     for page_num in range(len(pdf.pages)):
