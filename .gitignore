@@ -1,2 +1,4 @@
 server/db.sqlite3
 media/uploadedPdf
+generatedTextFiles
+processedTextFiles

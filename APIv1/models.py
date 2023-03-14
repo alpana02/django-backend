@@ -7,6 +7,8 @@ class Website(models.Model):
     # name = models.CharField(max_length=30)
     url = models.CharField(max_length=200)
     pdf = models.FileField(upload_to="APIv1/uploadedPdf/")
+    textFilePath = models.CharField(max_length=300)
+    summaryFilePath = models.CharField(max_length=300)
 
 
 class Sentences(models.Model):

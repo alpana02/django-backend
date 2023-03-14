@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from .models import Website,Sentences
 import json, os
 from PyPDF2 import PdfReader, PdfFileWriter
+from .utils import *
 
 from bs4 import BeautifulSoup
 import requests
@@ -18,22 +19,30 @@ def uploadUrl(request):
     if(len(Website.objects.filter(url = url))==0):
         obj = Website(url = url)
         obj.save()
-        res = generateSentences(url)
-
+        res, fileName = generateSentences(url)
+        obj.textFilePath = fileName
+        obj.save()
         for r in res : 
             s = Sentences(sentenceText = r, website =  obj)
             s.save()
 
-        sentences = list(Website.objects.get(id = obj.id).sentences_set.all())
-        sentences = random.sample(sentences, 7)
+        summaryFileName = getProcessedSummary(res,fileName)
+        obj.summaryFilePath = summaryFileName
+        obj.save()
 
-        for s in sentences:
-            s.selected = True
-            s.save()
+        # sentences = list(Website.objects.get(id = obj.id).sentences_set.all())
+        # sentences = random.sample(sentences, 7)
+        sentences = readSummaryFile(obj.summaryFilePath)
+
+        for s in list(Website.objects.get(id = obj.id).sentences_set.all()):
+            if s.sentenceText in sentences:
+                s.selected = True
+                s.save()
     else:
         obj = Website.objects.get(url = url)
 
     return JsonResponse({'objectId' : obj.id})
+
 
 @csrf_exempt
 def uploadPdf(request): 
@@ -88,40 +97,23 @@ child_elements = ['h1','h2','h3','h4','h5','p']
 def generateSentences (url):
     text = []
     page = requests.get(url)
-    print("11111------------>")
     soup = BeautifulSoup(page.content, 'html.parser')
-    print("22222------------>")
-
-    # for tag in child_elements:
-    #     for element in soup.select(tag):
-    #         text.append(re.sub('\s+', ' ', element.text.strip()))
-
-    # page = requests.get(url)
-    # soup = BeautifulSoup(page.content, 'html.parser')
-    # desried_divs = []
-    # desried_divs = soup.find_all("div", class_="tailwind-article-body")
-
-    # text = []
-    # for tag in desried_divs:
-    #     text.append((re.sub('\s+'," ",tag.text.strip())))
-    # text = text[0].split(".")
-    # return text
 
     current_sibling = soup.find('h2', text='Prepared Remarks:')
-    print("33333------------>")
     text = []
     while (current_sibling.next_sibling != soup.find('h2', text='Questions and Answers:')):
         if current_sibling.name == "p":
             text.append(current_sibling.next_sibling.text.strip())
         current_sibling = current_sibling.next_sibling
-    print("4444------------>")
 
     res = []
     for s in text:
         res+=(s.split(". "))
 
     test_list = [i for i in res if i]
-    return (test_list)
+    fileName = generatetextfile(test_list,url)
+    return (test_list, fileName)
+
 
 def generateSentencesPdf (url):
     # print(url,"-----------------------")
@@ -170,7 +162,6 @@ def summary(request,websiteId):
 
     d = '.'.join(d)
     return JsonResponse({"paragraph" : d, "sentence" : filteredSentence})
-
 
 
 #name
